@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Mot de Passe</title>
+    <script>
+        let usedPasswords = []; // Stocke les mots de passe validés avec leur nom
+
+        function generatePassword() {
+            let length = document.getElementById("length").value || Math.floor(Math.random() * 6) + 5;
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += String.fromCharCode(Math.floor(Math.random() * (126 - 33) + 33));
+            }
+            document.getElementById("result").innerText = "Mot de passe : " + password;
+            document.getElementById("copyBtn").style.display = "inline"; // Affiche le bouton de validation
+        }
+
+        function copy() {
+            let name = document.getElementById("name").value.trim();
+            let password = document.getElementById("result").innerText.replace("Mot de passe : ", "");
+
+            if (!name) {
+                alert("Veuillez entrer un nom !");
+                return;
+            }
+
+            if (!password || password === "Mot de passe :") {
+                alert("Aucun mot de passe généré !");
+                return;
+            }
+
+            let entry = `${name} : ${password}`;
+            if (usedPasswords.includes(entry)) {
+                alert("Ce mot de passe est déjà associé à ce nom !");
+                return;
+            }
+
+            usedPasswords.push(entry);
+
+            // Ajouter à la liste
+            let list = document.getElementById("passwordList");
+            let listItem = document.createElement("li");
+            listItem.textContent = entry;
+            list.appendChild(listItem);
+
+            // Copier dans le presse-papier
+            navigator.clipboard.writeText(password).then(() => {
+                alert("Mot de passe copié et validé !");
+            }).catch(err => {
+                console.error("Erreur lors de la copie :", err);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>Générateur de Mot de Passe</h2>
+    <label>Nom :</label>
+    <input type="text" id="name" placeholder="Entrez un nom">
+    
+    <label for="length">Longueur :</label>
+    <input type="number" id="length" min="0" max="20">
+    
+    <button onclick="generatePassword()">Générer</button>
+    <button id="copyBtn" onclick="copy()" style="display: none;">Valider & Copier</button>
+    
+    <p id="result"></p>
+
+    <h3>Liste des Mots de Passe</h3>
+    <ul id="passwordList"></ul>
+</body>
+</html>
